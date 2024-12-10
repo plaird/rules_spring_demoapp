@@ -6,10 +6,15 @@ module(
 )
 
 bazel_dep(name = "rules_spring", version = "2.5.1")
-local_path_override(
+git_override(
     module_name = "rules_spring",
-    path = "/Users/plaird/dev/rules_spring",
+    remote = "https://github.com/salesforce/rules_spring",
+    commit="29e7be015415b1a80e706cf40e333b1a6251961b",
 )
+#local_path_override(
+#    module_name = "rules_spring",
+#    path = "/Users/plaird/dev/rules_spring",
+#)
 
 # For License support
 bazel_dep(name = "rules_license", version = "1.0.0")
