@@ -150,3 +150,14 @@ java_test(
     deps = [ ":demoapp_lib" ] + test_deps + springboottest_deps,
     resources = glob(["src/test/resources/**"]),
 )
+
+# Prove that we can have a second springboot() app in the same BUILD file.
+#   https://github.com/salesforce/rules_spring/issues/139
+# To launch: bazel run //examples/demoapp:demoapp-second
+springboot(
+    name = "demoapp-second",
+    boot_app_class = "com.sample.SampleMain",
+    java_library = ":demoapp_lib",
+    boot_launcher_class = 'org.springframework.boot.loader.launch.JarLauncher',
+    deps = [ ":rootclassloader_lib", ],
+)
