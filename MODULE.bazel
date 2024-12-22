@@ -1,8 +1,8 @@
-bazel_dep(name = "rules_spring", version = "2.5.2")
+bazel_dep(name = "rules_spring", version = "2.6.0")
 git_override(
     module_name = "rules_spring",
     remote = "https://github.com/salesforce/rules_spring",
-    commit="9458a305f2978673cdeb26962d38fd0d4f7b7ad7",
+    commit="531594577e815ca790ef4c10b1d84c7eb5281e24",
 )
 #local_path_override(
 #    module_name = "rules_spring",

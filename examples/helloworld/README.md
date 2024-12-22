@@ -15,4 +15,4 @@ To run:
 bazel run //examples/helloworld
 ```
 
-For full documentation, see the [springboot](https://github.com/salesforce/rules_spring/tree/main/springboot) package documentation.
+For full documentation, see the [//springboot](../../springboot) package documentation.

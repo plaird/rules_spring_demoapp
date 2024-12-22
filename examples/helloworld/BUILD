@@ -1,12 +1,17 @@
 #
-# Copyright (c) 2017-2024, salesforce.com, inc.
+# Copyright (c) 2017-2021, salesforce.com, inc.
 # All rights reserved.
 # Licensed under the BSD 3-Clause license.
 # For full license text, see LICENSE.txt file in the repo root  or https://opensource.org/licenses/BSD-3-Clause
 #
 
+# NOTE:
+#   This sample is embedded in the same workspace as the springboot rule. Therefore references
+#   to local path "//springboot" work here. But you will need to change them to:
+#   "@rules_spring//springboot" when you consume the official release via http_archive.
+
 # load our Spring Boot rule
-load("@rules_spring//springboot:springboot.bzl", "springboot")
+load("//springboot:springboot.bzl", "springboot")
 
 # dependencies from other packages in the workspace
 lib_deps = [
@@ -16,7 +21,7 @@ lib_deps = [
 
 # create our deps list for Spring Boot
 springboot_deps = [
-    "//tools/import_bundles:springboot_required_deps",
+    "//springboot/import_bundles:springboot_required_deps",
     "@maven//:org_springframework_boot_spring_boot_starter_jetty",
     "@maven//:org_springframework_boot_spring_boot_starter_web",
     "@maven//:org_springframework_boot_spring_boot_loader_tools",
@@ -29,7 +34,7 @@ springboot_deps = [
 java_library(
     name = "helloworld_lib",
     srcs = glob(["src/main/java/**/*.java"]),
-    resources = glob(["src/main/resources/**/*"]),
+    resources = glob(["src/main/resources/**"]),
     deps = springboot_deps + lib_deps,
 )
 
