@@ -1,0 +1,25 @@
+url = "https://github.com/salesforce/rules_spring"
+
+core.workflow(
+    name = "default",
+    origin = git.origin(
+        url = url,
+        ref = "main",
+    ),
+    origin_files = glob(["examples/**"], exclude = [
+        "examples/README.md",
+        "examples/kotlinapp/README.md",
+    ]),
+
+    destination = git.destination(
+        url = "file:///Users/plaird/dev/rules_spring_demoapp",
+        fetch = "main",
+        push = "copybara",
+    ),
+    destination_files = glob(["examples/**"], exclude = [
+        "examples/README.md",
+        "examples/kotlinapp/README.md",
+    ]),
+
+    authoring = authoring.pass_thru("Default email <plaird@salesforce.com>"),
+)
