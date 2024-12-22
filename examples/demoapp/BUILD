@@ -10,8 +10,9 @@
 #   to local path "//springboot" work here. But you will need to change them to:
 #   "@rules_spring//springboot" when you consume the official release via http_archive.
 
-load("@rules_spring//springboot:springboot.bzl", "springboot")
-load("@rules_spring//springboot:deps_filter_transitive.bzl", "deps_filter_transitive")
+load("//springboot:springboot.bzl", "springboot")
+load("//springboot:deps_filter_transitive.bzl", "deps_filter_transitive")
+load("//tools/license:licenses_used.bzl", "licenses_used")
 
 # dependencies from other packages in the workspace
 deps = [
@@ -21,7 +22,7 @@ deps = [
 
 # create our deps list for Spring Boot
 springboot_deps = [
-    "//tools/import_bundles:springboot_required_deps",
+    "//springboot/import_bundles:springboot_required_deps",
     "@maven//:org_springframework_boot_spring_boot_starter_jetty",
     "@maven//:org_springframework_boot_spring_boot_starter_web",
     "@maven//:org_springframework_boot_spring_boot_loader_tools",
@@ -53,7 +54,7 @@ deps_filter_transitive(
 java_library(
     name = "demoapp_lib",
     srcs = glob(["src/main/java/**/*.java"]),
-    resources = glob(["src/main/resources/**/*"]),
+    resources = glob(["src/main/resources/**"]),
     deps = [":filtered_deps"],
 )
 
@@ -120,6 +121,10 @@ springboot(
     # Specify optional JVM args to use when the application is launched with 'bazel run'
     bazelrun_jvm_flags = "-Dcustomprop=gold -DcustomProp2=silver", # old way
     bazelrun_jvm_flag_list = ["-Dcustomprop3=bronze", "-DcustomProp4=copper"], # new way
+    # Specify optional environment variables to set when the application is launched with 'bazel run'
+    bazelrun_env_flag_list = ["PROP1=blue", "PROP2=green"],
+
+    # add JVM exports/opens for Java modularization
     bazelrun_addexports = [
         "java.base/java.base=ALL-UNNAMED",
         "java.base/java.io=ALL-UNNAMED",
@@ -129,7 +134,7 @@ springboot(
         "java.base/java.util.concurrent=ALL-UNNAMED",
         "java.base/java.util.logging=ALL-UNNAMED",
     ],
-
+    
     # data files can be made available in the working directory for when the app is launched with bazel run
     bazelrun_data = [":bazelrun_data_files"],
 
@@ -159,6 +164,12 @@ java_test(
     srcs = ["src/test/java/com/sample/SampleRestFuncTest.java"],
     deps = [ ":demoapp_lib" ] + test_deps + springboottest_deps,
     resources = glob(["src/test/resources/**"]),
+)
+
+licenses_used(
+    name = "demoapp_licenses",
+    out = "demoapp_licenses.json",
+    deps = [":demoapp"],
 )
 
 # Prove that we can have a second springboot() app in the same BUILD file.
