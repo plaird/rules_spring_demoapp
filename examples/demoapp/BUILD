@@ -10,9 +10,8 @@
 #   to local path "//springboot" work here. But you will need to change them to:
 #   "@rules_spring//springboot" when you consume the official release via http_archive.
 
-load("//springboot:springboot.bzl", "springboot")
-load("//springboot:deps_filter_transitive.bzl", "deps_filter_transitive")
-load("//tools/license:licenses_used.bzl", "licenses_used")
+load("@rules_spring//springboot:springboot.bzl", "springboot")
+load("@rules_spring//springboot:deps_filter_transitive.bzl", "deps_filter_transitive")
 
 # dependencies from other packages in the workspace
 deps = [
@@ -22,7 +21,7 @@ deps = [
 
 # create our deps list for Spring Boot
 springboot_deps = [
-    "//springboot/import_bundles:springboot_required_deps",
+    "//tools/import_bundles:springboot_required_deps",
     "@maven//:org_springframework_boot_spring_boot_starter_jetty",
     "@maven//:org_springframework_boot_spring_boot_starter_web",
     "@maven//:org_springframework_boot_spring_boot_loader_tools",
@@ -164,12 +163,6 @@ java_test(
     srcs = ["src/test/java/com/sample/SampleRestFuncTest.java"],
     deps = [ ":demoapp_lib" ] + test_deps + springboottest_deps,
     resources = glob(["src/test/resources/**"]),
-)
-
-licenses_used(
-    name = "demoapp_licenses",
-    out = "demoapp_licenses.json",
-    deps = [":demoapp"],
 )
 
 # Prove that we can have a second springboot() app in the same BUILD file.

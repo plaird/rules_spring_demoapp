@@ -22,4 +22,7 @@ core.workflow(
     ]),
 
     authoring = authoring.pass_thru("Default email <plaird@salesforce.com>"),
+    patch.apply(
+        patches = ["rules_spring_demoapp.patch"]
+    ),
 )

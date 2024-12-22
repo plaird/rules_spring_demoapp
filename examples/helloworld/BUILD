@@ -11,7 +11,7 @@
 #   "@rules_spring//springboot" when you consume the official release via http_archive.
 
 # load our Spring Boot rule
-load("//springboot:springboot.bzl", "springboot")
+load("@rules_spring//springboot:springboot.bzl", "springboot")
 
 # dependencies from other packages in the workspace
 lib_deps = [
@@ -21,7 +21,7 @@ lib_deps = [
 
 # create our deps list for Spring Boot
 springboot_deps = [
-    "//springboot/import_bundles:springboot_required_deps",
+    "//tools/import_bundles:springboot_required_deps",
     "@maven//:org_springframework_boot_spring_boot_starter_jetty",
     "@maven//:org_springframework_boot_spring_boot_starter_web",
     "@maven//:org_springframework_boot_spring_boot_loader_tools",

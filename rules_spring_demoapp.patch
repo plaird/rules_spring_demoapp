@@ -1,0 +1,70 @@
+diff --git a/examples/demoapp/BUILD b/examples/demoapp/BUILD
+index cf79687..935336e 100644
+--- a/examples/demoapp/BUILD
++++ b/examples/demoapp/BUILD
+@@ -10,9 +10,8 @@
+ #   to local path "//springboot" work here. But you will need to change them to:
+ #   "@rules_spring//springboot" when you consume the official release via http_archive.
+ 
+-load("//springboot:springboot.bzl", "springboot")
+-load("//springboot:deps_filter_transitive.bzl", "deps_filter_transitive")
+-load("//tools/license:licenses_used.bzl", "licenses_used")
++load("@rules_spring//springboot:springboot.bzl", "springboot")
++load("@rules_spring//springboot:deps_filter_transitive.bzl", "deps_filter_transitive")
+ 
+ # dependencies from other packages in the workspace
+ deps = [
+@@ -22,7 +21,7 @@ deps = [
+ 
+ # create our deps list for Spring Boot
+ springboot_deps = [
+-    "//springboot/import_bundles:springboot_required_deps",
++    "//tools/import_bundles:springboot_required_deps",
+     "@maven//:org_springframework_boot_spring_boot_starter_jetty",
+     "@maven//:org_springframework_boot_spring_boot_starter_web",
+     "@maven//:org_springframework_boot_spring_boot_loader_tools",
+@@ -166,12 +165,6 @@ java_test(
+     resources = glob(["src/test/resources/**"]),
+ )
+ 
+-licenses_used(
+-    name = "demoapp_licenses",
+-    out = "demoapp_licenses.json",
+-    deps = [":demoapp"],
+-)
+-
+ # Prove that we can have a second springboot() app in the same BUILD file.
+ #   https://github.com/salesforce/rules_spring/issues/139
+ # To launch: bazel run //examples/demoapp:demoapp-second
+diff --git a/examples/demoapp/README.md b/examples/demoapp/README.md
+index 309d6e0..e287b3f 100644
+--- a/examples/demoapp/README.md
++++ b/examples/demoapp/README.md
+@@ -15,4 +15,4 @@ To run:
+ bazel run //examples/demoapp
+ ```
+ 
+-For full documentation, see the [//springboot](../../springboot) package documentation.
++For full documentation, see the [springboot](https://github.com/salesforce/rules_spring/tree/main/springboot) package documentation.
+diff --git a/examples/helloworld/BUILD b/examples/helloworld/BUILD
+index bb63e22..c1b73e9 100644
+--- a/examples/helloworld/BUILD
++++ b/examples/helloworld/BUILD
+@@ -11,7 +11,7 @@
+ #   "@rules_spring//springboot" when you consume the official release via http_archive.
+ 
+ # load our Spring Boot rule
+-load("//springboot:springboot.bzl", "springboot")
++load("@rules_spring//springboot:springboot.bzl", "springboot")
+ 
+ # dependencies from other packages in the workspace
+ lib_deps = [
+@@ -21,7 +21,7 @@ lib_deps = [
+ 
+ # create our deps list for Spring Boot
+ springboot_deps = [
+-    "//springboot/import_bundles:springboot_required_deps",
++    "//tools/import_bundles:springboot_required_deps",
+     "@maven//:org_springframework_boot_spring_boot_starter_jetty",
+     "@maven//:org_springframework_boot_spring_boot_starter_web",
+     "@maven//:org_springframework_boot_spring_boot_loader_tools",
