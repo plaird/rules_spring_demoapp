@@ -11,7 +11,7 @@
 #   "@rules_spring//springboot" when you consume the official release via http_archive.
 
 load("@rules_spring//springboot:springboot.bzl", "springboot")
-load("@rules_spring//springboot:deps_filter_transitive.bzl", "deps_filter_transitive")
+load("@rules_spring//springboot/deps_filter_rules:deps_filter.bzl", "deps_filter")
 
 # dependencies from other packages in the workspace
 deps = [
@@ -34,10 +34,10 @@ springboot_deps = [
 
 # Sometimes you have a transitive that you don't want. The unwanted_classes.md doc
 # covers this case, and this snippet shows how to use it:
-deps_filter_transitive(
+deps_filter(
     name = "filtered_deps",
     deps = springboot_deps + deps, # the input list
-    deps_exclude = [
+    deps_exclude_labels = [
         # tomcat comes in transitively, but we want to use jetty
         "@maven//:org_apache_tomcat_embed_tomcat_embed_core",
         "@maven//:org_apache_tomcat_embed_tomcat_embed_el",
