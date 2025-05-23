@@ -6,7 +6,6 @@ demoapp BUILD
 SampleMain.java
 
 1. debug demoapp
-Edit Config
 
 [switch to terminal]
 
@@ -22,12 +21,13 @@ jps
 bazel test //...
 
 4. bazel run
+bazel run examples/demoapp
 http://localhost:8080/actuator/configprops
 
 5. bazel query
 bazel query 'deps(examples/demoapp:demoapp_lib)' | grep @maven
 bazel query 'deps(examples/demoapp:demoapp_lib)' | grep tomcat
-bazel query 'somepath(examples/demoapp:demoapp_lib, @maven//:org_apache_tomcat_embed_tomcat_embed_core)'
+bazel query --output graph 'somepath(examples/demoapp:demoapp_lib, @maven//:org_apache_tomcat_embed_tomcat_embed_core)'
 
 6. BUILD file edits
 - remove tomcat
