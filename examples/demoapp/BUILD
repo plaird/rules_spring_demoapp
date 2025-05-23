@@ -22,6 +22,7 @@ deps = [
 # create our deps list for Spring Boot
 springboot_deps = [
     "//tools/import_bundles:springboot_required_deps",
+    "@maven//:org_springframework_boot_spring_boot_actuator",
     "@maven//:org_springframework_boot_spring_boot_starter_jetty",
     "@maven//:org_springframework_boot_spring_boot_starter_web",
     "@maven//:org_springframework_boot_spring_boot_loader_tools",
@@ -36,7 +37,6 @@ springboot_deps = [
 # covers this case, and this snippet shows how to use it:
 deps_filter(
     name = "filtered_deps",
-    deps = springboot_deps + deps, # the input list
     deps_exclude_labels = [
         # tomcat comes in transitively, but we want to use jetty
         "@maven//:org_apache_tomcat_embed_tomcat_embed_core",
@@ -47,6 +47,7 @@ deps_filter(
         "@maven//:javax_annotation_javax_annotation_api",
     ],
     exclude_transitives = True,
+    deps = springboot_deps + deps,  # the input list
 )
 
 # This Java library contains the app code
@@ -70,9 +71,9 @@ test_deps = [
 ]
 
 java_test(
-   name = "SampleRestUnitTest",
-   srcs = ["src/test/java/com/sample/SampleRestUnitTest.java"],
-   deps = [ ":demoapp_lib" ] + test_deps,
+    name = "SampleRestUnitTest",
+    srcs = ["src/test/java/com/sample/SampleRestUnitTest.java"],
+    deps = [":demoapp_lib"] + test_deps,
 )
 
 filegroup(
@@ -81,7 +82,7 @@ filegroup(
         "application.properties",
         "application-dev.properties",
         "config/application.properties",
-        "example_data.txt"
+        "example_data.txt",
     ],
 )
 
@@ -89,39 +90,13 @@ filegroup(
 # To launch: bazel run //examples/demoapp
 springboot(
     name = "demoapp",
-    boot_app_class = "com.sample.SampleMain",
-    java_library = ":demoapp_lib",
 
-    # SPRING BOOT 3
-    # The launcher class changed in between Boot2 and Boot3, so we provide the
-    # Boot3 launcher class here (the Boot2 one is the default)
-    boot_launcher_class = 'org.springframework.boot.loader.launch.JarLauncher',
-
-    # DEPS ARE OPTIONAL HERE
-    #  The springboot rule inherits all deps and runtime_deps from the java_library()
-    #  but this jar for uncommon reason is just added to the springboot rule.
-    deps = [ ":rootclassloader_lib", ],
-
-    # TO TEST THE DUPE CLASSES FEATURE:
-    #   There is an intentionally duplicated class in lib1 and lib2. Do this:
-    #   1. set dupeclassescheck_enable = True
-    #   2. comment out lib1 or lib2 in demoapp_dupeclass_allowlist.txt
-    #   Build should fail due to the duplicate class.
-    dupeclassescheck_enable = False,
-    #dupeclassescheck_ignorelist = "demoapp_dupeclass_allowlist.txt",
-
-    # BANNED DEPS
-    # These are dependencies that you never want in your springboot jar.
-    # This is used to detect mistakes in your transitive dependency graph. They
-    # might be test jars, or compile time jars like lombok. The list of strings
-    # is matched against the dependency jar filenames with a 'contains' match.
-    deps_banned = ["junit", "mockito", "lombok"],
-
-    # Specify optional JVM args to use when the application is launched with 'bazel run'
-    bazelrun_jvm_flags = "-Dcustomprop=gold -DcustomProp2=silver", # old way
-    bazelrun_jvm_flag_list = ["-Dcustomprop3=bronze", "-DcustomProp4=copper"], # new way
-    # Specify optional environment variables to set when the application is launched with 'bazel run'
-    bazelrun_env_flag_list = ["PROP1=blue", "PROP2=green"],
+    # sometimes packagers want to put certain files into the root of the springboot app jar
+    # these addins will be copied into the root of the generated springboot jar
+    addins = [
+        ":info.txt",
+        ":author.txt",
+    ],
 
     # add JVM exports/opens for Java modularization
     bazelrun_addexports = [
@@ -133,23 +108,62 @@ springboot(
         "java.base/java.util.concurrent=ALL-UNNAMED",
         "java.base/java.util.logging=ALL-UNNAMED",
     ],
-    
+
     # data files can be made available in the working directory for when the app is launched with bazel run
     bazelrun_data = [":bazelrun_data_files"],
+    # Specify optional environment variables to set when the application is launched with 'bazel run'
+    bazelrun_env_flag_list = [
+        "PROP1=blue",
+        "PROP2=green",
+    ],
+    bazelrun_jvm_flag_list = [
+        "-Dcustomprop3=bronze",
+        "-DcustomProp4=copper",
+    ],  # new way
+
+    # Specify optional JVM args to use when the application is launched with 'bazel run'
+    bazelrun_jvm_flags = "-Dcustomprop=gold -DcustomProp2=silver",  # old way
 
     # run the application in the background (command returns immediately)
     #bazelrun_background = True,
 
     # you may choose to override the launcher script that is used when you invoke 'bazel run //examples/demoapp'
     bazelrun_script = "custom_bazelrun_script.sh",
+    boot_app_class = "com.sample.SampleMain",
+
+    # SPRING BOOT 3
+    # The launcher class changed in between Boot2 and Boot3, so we provide the
+    # Boot3 launcher class here (the Boot2 one is the default)
+    boot_launcher_class = "org.springframework.boot.loader.launch.JarLauncher",
+    #dupeclassescheck_ignorelist = "demoapp_dupeclass_allowlist.txt",
+
+    # BANNED DEPS
+    # These are dependencies that you never want in your springboot jar.
+    # This is used to detect mistakes in your transitive dependency graph. They
+    # might be test jars, or compile time jars like lombok. The list of strings
+    # is matched against the dependency jar filenames with a 'contains' match.
+    deps_banned = [
+        "junit",
+        "mockito",
+        "lombok",
+    ],
 
     # if you have conflicting classes in dependency jar files, you can define the order in which the jars are loaded
     #  https://docs.spring.io/spring-boot/docs/current/reference/html/appendix-executable-jar-format.html#executable-jar-war-index-files-classpath
     deps_index_file = ":demoapp_classpath.idx",
 
-    # sometimes packagers want to put certain files into the root of the springboot app jar
-    # these addins will be copied into the root of the generated springboot jar
-    addins = [":info.txt", ":author.txt"],
+    # TO TEST THE DUPE CLASSES FEATURE:
+    #   There is an intentionally duplicated class in lib1 and lib2. Do this:
+    #   1. set dupeclassescheck_enable = True
+    #   2. comment out lib1 or lib2 in demoapp_dupeclass_allowlist.txt
+    #   Build should fail due to the duplicate class.
+    dupeclassescheck_enable = False,
+    java_library = ":demoapp_lib",
+
+    # DEPS ARE OPTIONAL HERE
+    #  The springboot rule inherits all deps and runtime_deps from the java_library()
+    #  but this jar for uncommon reason is just added to the springboot rule.
+    deps = [":rootclassloader_lib"],
 )
 
 springboottest_deps = [
@@ -161,8 +175,8 @@ springboottest_deps = [
 java_test(
     name = "SampleRestFuncTest",
     srcs = ["src/test/java/com/sample/SampleRestFuncTest.java"],
-    deps = [ ":demoapp_lib" ] + test_deps + springboottest_deps,
     resources = glob(["src/test/resources/**"]),
+    deps = [":demoapp_lib"] + test_deps + springboottest_deps,
 )
 
 # Prove that we can have a second springboot() app in the same BUILD file.
@@ -171,7 +185,7 @@ java_test(
 springboot(
     name = "demoapp-second",
     boot_app_class = "com.sample.SampleMain",
+    boot_launcher_class = "org.springframework.boot.loader.launch.JarLauncher",
     java_library = ":demoapp_lib",
-    boot_launcher_class = 'org.springframework.boot.loader.launch.JarLauncher',
-    deps = [ ":rootclassloader_lib", ],
+    deps = [":rootclassloader_lib"],
 )
