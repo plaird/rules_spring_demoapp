@@ -90,6 +90,7 @@ filegroup(
 # To launch: bazel run //examples/demoapp
 springboot(
     name = "demoapp",
+    java_library = ":demoapp_lib",
 
     # sometimes packagers want to put certain files into the root of the springboot app jar
     # these addins will be copied into the root of the generated springboot jar
@@ -135,7 +136,6 @@ springboot(
     # The launcher class changed in between Boot2 and Boot3, so we provide the
     # Boot3 launcher class here (the Boot2 one is the default)
     boot_launcher_class = "org.springframework.boot.loader.launch.JarLauncher",
-    #dupeclassescheck_ignorelist = "demoapp_dupeclass_allowlist.txt",
 
     # BANNED DEPS
     # These are dependencies that you never want in your springboot jar.
@@ -158,7 +158,7 @@ springboot(
     #   2. comment out lib1 or lib2 in demoapp_dupeclass_allowlist.txt
     #   Build should fail due to the duplicate class.
     dupeclassescheck_enable = False,
-    java_library = ":demoapp_lib",
+    #dupeclassescheck_ignorelist = "demoapp_dupeclass_allowlist.txt",
 
     # DEPS ARE OPTIONAL HERE
     #  The springboot rule inherits all deps and runtime_deps from the java_library()
