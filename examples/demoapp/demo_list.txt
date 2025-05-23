@@ -2,7 +2,7 @@ Demos:
 
 0. show demoapp structure
 MODULE.bazel
-BUILD
+demoapp BUILD
 SampleMain.java
 
 1. debug demoapp
@@ -30,11 +30,12 @@ bazel query 'deps(examples/demoapp:demoapp_lib)' | grep tomcat
 bazel query 'somepath(examples/demoapp:demoapp_lib, @maven//:org_apache_tomcat_embed_tomcat_embed_core)'
 
 6. BUILD file edits
-- dupe class check
-set to True
-
 - remove tomcat
 jar -tvf bazel-bin/examples/demoapp/demoapp.jar| grep tomcat
+update BUILD file
+
+- dupe class check
+set to True
 
 - test dep banned
 uncomment junit

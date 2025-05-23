@@ -24,10 +24,6 @@ springboot_deps = [
 
     # add a test dependency to our springboot app by mistake
     #"@maven//:junit_junit",
-
-    # bring in same dep again as above, but through a different maven_install
-    # rule: the springboot rule does not package duplicate deps, first one wins
-    #"@spring_boot_starter_jetty//:org_springframework_boot_spring_boot_starter_jetty",
 ]
 
 # Sometimes you have a transitive that you don't want. The unwanted_classes.md doc
@@ -85,6 +81,7 @@ springboot(
         ":author.txt",
     ],
 
+    # BAZEL RUN SETTINGS
     # add JVM exports/opens for Java modularization
     bazelrun_addexports = [
         "java.base/java.base=ALL-UNNAMED",
@@ -95,7 +92,6 @@ springboot(
         "java.base/java.util.concurrent=ALL-UNNAMED",
         "java.base/java.util.logging=ALL-UNNAMED",
     ],
-
     # data files can be made available in the working directory for when the app is launched with bazel run
     bazelrun_data = [":bazelrun_data_files"],
     # Specify optional environment variables to set when the application is launched with 'bazel run'
@@ -106,11 +102,9 @@ springboot(
     bazelrun_jvm_flag_list = [
         "-Dcustomprop3=bronze",
         "-DcustomProp4=copper",
-    ],  # new way
-
+    ],
     # run the application in the background (command returns immediately)
     #bazelrun_background = True,
-
     # you may choose to override the launcher script that is used when you invoke 'bazel run //examples/demoapp'
     #bazelrun_script = "custom_bazelrun_script.sh",
 
@@ -135,7 +129,7 @@ springboot(
     #   2. comment out lib1 or lib2 in demoapp_dupeclass_allowlist.txt
     #   Build should fail due to the duplicate class.
     dupeclassescheck_enable = False,
-    #dupeclassescheck_ignorelist = "demoapp_dupeclass_allowlist.txt",
+    dupeclassescheck_ignorelist = "demoapp_dupeclass_allowlist.txt",
 )
 
 springboottest_deps = [
