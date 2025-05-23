@@ -20,12 +20,12 @@ import org.springframework.test.context.junit4.SpringRunner;
  * created, you can autowire spring beans into the test.
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = SampleMain.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(classes = HelloWorldMain.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestPropertySource(locations = {"classpath:/test.properties"})
-public class SampleRestFuncTest {
+public class HelloWorldRestFuncTest {
 
     @Autowired
-    private SampleRest sampleRest;
+    private HelloWorldRest sampleRest;
 
     @Test
     public void apiTest() {

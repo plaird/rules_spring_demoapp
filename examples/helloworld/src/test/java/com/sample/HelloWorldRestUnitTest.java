@@ -13,11 +13,11 @@ import org.junit.Test;
 /**
  * This test class does NOT start the Spring Boot application. It is a simple unit test.
  */
-public class SampleRestUnitTest {
+public class HelloWorldRestUnitTest {
 
     @Test
     public void apiTest() {
-      SampleRest testClass = new SampleRest();
+      HelloWorldRest testClass = new HelloWorldRest();
       assertEquals("Hello!", testClass.hello());
     }
 }

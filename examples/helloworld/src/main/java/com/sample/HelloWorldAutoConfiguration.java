@@ -2,7 +2,7 @@ package com.sample;
 
 import org.springframework.context.annotation.Bean;
 
-public class SampleAutoConfiguration {
+public class HelloWorldAutoConfiguration {
     @Bean
     public String helloMessage() {
         return "Hello SpringBoot!";

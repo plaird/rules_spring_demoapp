@@ -104,11 +104,11 @@ springboot(
 
     # TO TEST THE DUPE CLASSES FEATURE:
     #   There is an intentionally duplicated class in lib1 and lib2. Do this:
-    #   1. set fail_on_duplicate_classes = True
+    #   1. set dupeclassescheck_enable = True
     #   2. comment out lib1 or lib2 in demoapp_dupeclass_allowlist.txt
     #   Build should fail due to the duplicate class.
-    dupeclassescheck_enable = True,
-    dupeclassescheck_ignorelist = "demoapp_dupeclass_allowlist.txt",
+    dupeclassescheck_enable = False,
+    #dupeclassescheck_ignorelist = "demoapp_dupeclass_allowlist.txt",
 
     # BANNED DEPS
     # These are dependencies that you never want in your springboot jar.

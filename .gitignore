@@ -7,3 +7,8 @@
 
 # bazel build dirs
 bazel-*
+
+*.iml
+.idea
+.ijwb
+MODULE.bazel.lock

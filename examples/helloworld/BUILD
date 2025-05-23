@@ -26,7 +26,6 @@ springboot_deps = [
     "@maven//:org_springframework_boot_spring_boot_starter_web",
     "@maven//:org_springframework_boot_spring_boot_loader_tools",
     "@maven//:org_springframework_spring_webmvc",
-
     "@maven//:javax_annotation_javax_annotation_api",
 ]
 
@@ -44,22 +43,22 @@ test_deps = [
 ]
 
 java_test(
-   name = "SampleRestUnitTest",
-   srcs = ["src/test/java/com/sample/SampleRestUnitTest.java"],
-   deps = [ ":helloworld_lib" ] + test_deps,
+    name = "HelloWorldRestUnitTest",
+    srcs = ["src/test/java/com/sample/HelloWorldRestUnitTest.java"],
+    deps = [":helloworld_lib"] + test_deps,
 )
 
 # Build the app as a Spring Boot executable jar
 # To launch: bazel run //examples/helloworld
 springboot(
     name = "helloworld",
-    boot_app_class = "com.sample.SampleMain",
-    java_library = ":helloworld_lib",
+    boot_app_class = "com.sample.HelloWorldMain",
 
     # SPRING BOOT 3
     # The launcher class changed in between Boot2 and Boot3, so we provide the
     # Boot3 launcher class here (the Boot2 one is the default)
-    boot_launcher_class = 'org.springframework.boot.loader.launch.JarLauncher',
+    boot_launcher_class = "org.springframework.boot.loader.launch.JarLauncher",
+    java_library = ":helloworld_lib",
 )
 
 springboottest_deps = [
@@ -69,8 +68,8 @@ springboottest_deps = [
 ]
 
 java_test(
-    name = "SampleRestFuncTest",
-    srcs = ["src/test/java/com/sample/SampleRestFuncTest.java"],
-    deps = [ ":helloworld_lib" ] + test_deps + springboottest_deps,
+    name = "HelloWorldRestFuncTest",
+    srcs = ["src/test/java/com/sample/HelloWorldRestFuncTest.java"],
     resources = glob(["src/test/resources/**"]),
+    deps = [":helloworld_lib"] + test_deps + springboottest_deps,
 )

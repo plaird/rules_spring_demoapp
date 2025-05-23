@@ -10,18 +10,18 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class SampleMain {
+public class HelloWorldMain {
 
   public static void main(String[] args) {
-    System.out.println("SampleMain: Launching the sample SpringBoot demo application...");
+    System.out.println("HelloWorldMain: Launching the sample SpringBoot demo application...");
     StringBuffer sb = new StringBuffer();
     for (String arg : args) {
       sb.append(arg);
       sb.append(" ");
     }
-    System.out.println("SampleMain:  Command line args: "+sb.toString());
+    System.out.println("HelloWorldMain:  Command line args: "+sb.toString());
 
-    SpringApplication.run(SampleMain.class, args);
+    SpringApplication.run(HelloWorldMain.class, args);
   }
 
 }

@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Value;
 
 import org.springframework.boot.loader.tools.SignalUtils;
 
+
+
 public class SampleAutoConfiguration {
 
     @Value("${demoapp.config.internal:not found}")
