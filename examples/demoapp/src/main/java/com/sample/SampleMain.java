@@ -12,7 +12,6 @@ import com.bazel.demo.IntentionalDupedClass;
 
 @SpringBootApplication
 public class SampleMain {
-
   // both //examples/demoapp/libs/lib1 and //examples/demoapp/libs/lib2 have this class
   // this is only a problem if the springboot rule is configured to fail on dupes.
   static private IntentionalDupedClass dupedClass = new IntentionalDupedClass();
@@ -28,10 +27,6 @@ public class SampleMain {
     System.out.println("SampleMain:  Command line args: "+sb.toString());
 
     System.out.println("\nSampleMain:  Intentional duped class version: "+dupedClass.hello());
-
-    // test that the root class is available
-    Class.forName("com.sample.SampleRootClass");
-    System.out.println("\nSampleMain:  loaded the root class com.sample.SampleRootClass");
 
     SpringApplication.run(SampleMain.class, args);
   }

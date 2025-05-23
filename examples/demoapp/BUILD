@@ -4,12 +4,6 @@
 # Licensed under the BSD 3-Clause license.
 # For full license text, see LICENSE.txt file in the repo root  or https://opensource.org/licenses/BSD-3-Clause
 #
-
-# NOTE:
-#   This sample is embedded in the same workspace as the springboot rule. Therefore references
-#   to local path "//springboot" work here. But you will need to change them to:
-#   "@rules_spring//springboot" when you consume the official release via http_archive.
-
 load("@rules_spring//springboot:springboot.bzl", "springboot")
 load("@rules_spring//springboot/deps_filter_rules:deps_filter.bzl", "deps_filter")
 
@@ -28,6 +22,9 @@ springboot_deps = [
     "@maven//:org_springframework_boot_spring_boot_loader_tools",
     "@maven//:org_springframework_spring_webmvc",
 
+    # add a test dependency to our springboot app by mistake
+    #"@maven//:junit_junit",
+
     # bring in same dep again as above, but through a different maven_install
     # rule: the springboot rule does not package duplicate deps, first one wins
     #"@spring_boot_starter_jetty//:org_springframework_boot_spring_boot_starter_jetty",
@@ -38,10 +35,11 @@ springboot_deps = [
 deps_filter(
     name = "filtered_deps",
     deps_exclude_labels = [
-        # tomcat comes in transitively, but we want to use jetty
-        "@maven//:org_apache_tomcat_embed_tomcat_embed_core",
-        "@maven//:org_apache_tomcat_embed_tomcat_embed_el",
-        "@maven//:org_apache_tomcat_embed_tomcat_embed_websocket",
+        # tomcat comes in transitively, but we want to use jetty, so block it
+        #"@maven//:org_apache_tomcat_embed_tomcat_embed_core",
+        #"@maven//:org_apache_tomcat_embed_tomcat_embed_el",
+        #"@maven//:org_apache_tomcat_embed_tomcat_embed_websocket",
+        #"@maven//:org_springframework_boot_spring_boot_starter_tomcat",
 
         # just a demo of excluding a transitive
         "@maven//:javax_annotation_javax_annotation_api",
@@ -56,24 +54,6 @@ java_library(
     srcs = glob(["src/main/java/**/*.java"]),
     resources = glob(["src/main/resources/**"]),
     deps = [":filtered_deps"],
-)
-
-# This is just an example of having a dependency that you want only added to
-# the springboot jar, not the java_library. This is rare.
-java_library(
-    name = "rootclassloader_lib",
-    srcs = glob(["src_root/main/java/**/*.java"]),
-)
-
-test_deps = [
-    "@maven//:junit_junit",
-    "@maven//:org_hamcrest_hamcrest_core",
-]
-
-java_test(
-    name = "SampleRestUnitTest",
-    srcs = ["src/test/java/com/sample/SampleRestUnitTest.java"],
-    deps = [":demoapp_lib"] + test_deps,
 )
 
 filegroup(
@@ -91,6 +71,12 @@ filegroup(
 springboot(
     name = "demoapp",
     java_library = ":demoapp_lib",
+    boot_app_class = "com.sample.SampleMain",
+
+    # SPRING BOOT 3
+    # The launcher class changed in between Boot2 and Boot3, so we provide the
+    # Boot3 launcher class here (the Boot2 one is the default)
+    boot_launcher_class = "org.springframework.boot.loader.launch.JarLauncher",
 
     # sometimes packagers want to put certain files into the root of the springboot app jar
     # these addins will be copied into the root of the generated springboot jar
@@ -122,20 +108,11 @@ springboot(
         "-DcustomProp4=copper",
     ],  # new way
 
-    # Specify optional JVM args to use when the application is launched with 'bazel run'
-    bazelrun_jvm_flags = "-Dcustomprop=gold -DcustomProp2=silver",  # old way
-
     # run the application in the background (command returns immediately)
     #bazelrun_background = True,
 
     # you may choose to override the launcher script that is used when you invoke 'bazel run //examples/demoapp'
-    bazelrun_script = "custom_bazelrun_script.sh",
-    boot_app_class = "com.sample.SampleMain",
-
-    # SPRING BOOT 3
-    # The launcher class changed in between Boot2 and Boot3, so we provide the
-    # Boot3 launcher class here (the Boot2 one is the default)
-    boot_launcher_class = "org.springframework.boot.loader.launch.JarLauncher",
+    #bazelrun_script = "custom_bazelrun_script.sh",
 
     # BANNED DEPS
     # These are dependencies that you never want in your springboot jar.
@@ -159,11 +136,6 @@ springboot(
     #   Build should fail due to the duplicate class.
     dupeclassescheck_enable = False,
     #dupeclassescheck_ignorelist = "demoapp_dupeclass_allowlist.txt",
-
-    # DEPS ARE OPTIONAL HERE
-    #  The springboot rule inherits all deps and runtime_deps from the java_library()
-    #  but this jar for uncommon reason is just added to the springboot rule.
-    deps = [":rootclassloader_lib"],
 )
 
 springboottest_deps = [
@@ -172,20 +144,20 @@ springboottest_deps = [
     "@maven//:org_springframework_spring_test",
 ]
 
+test_deps = [
+    "@maven//:junit_junit",
+    "@maven//:org_hamcrest_hamcrest_core",
+]
+
+java_test(
+    name = "SampleRestUnitTest",
+    srcs = ["src/test/java/com/sample/SampleRestUnitTest.java"],
+    deps = [":demoapp_lib"] + test_deps,
+)
+
 java_test(
     name = "SampleRestFuncTest",
     srcs = ["src/test/java/com/sample/SampleRestFuncTest.java"],
     resources = glob(["src/test/resources/**"]),
     deps = [":demoapp_lib"] + test_deps + springboottest_deps,
-)
-
-# Prove that we can have a second springboot() app in the same BUILD file.
-#   https://github.com/salesforce/rules_spring/issues/139
-# To launch: bazel run //examples/demoapp:demoapp-second
-springboot(
-    name = "demoapp-second",
-    boot_app_class = "com.sample.SampleMain",
-    boot_launcher_class = "org.springframework.boot.loader.launch.JarLauncher",
-    java_library = ":demoapp_lib",
-    deps = [":rootclassloader_lib"],
 )

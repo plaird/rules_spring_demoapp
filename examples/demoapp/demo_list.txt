@@ -1,0 +1,40 @@
+Demos:
+
+0. show demoapp structure
+MODULE.bazel
+BUILD
+SampleMain.java
+
+1. debug demoapp
+Edit Config
+
+[switch to terminal]
+
+2. bazel build
+bazel build //...
+bazel build examples/demoapp/...
+bazel build examples/demoapp:demoapp
+change Main class and build
+change test class and build
+jps
+
+3. bazel test
+bazel test //...
+
+4. bazel run
+http://localhost:8080/actuator/configprops
+
+5. bazel query
+bazel query 'deps(examples/demoapp:demoapp_lib)' | grep @maven
+bazel query 'deps(examples/demoapp:demoapp_lib)' | grep tomcat
+bazel query 'somepath(examples/demoapp:demoapp_lib, @maven//:org_apache_tomcat_embed_tomcat_embed_core)'
+
+6. BUILD file edits
+- dupe class check
+set to True
+
+- remove tomcat
+jar -tvf bazel-bin/examples/demoapp/demoapp.jar| grep tomcat
+
+- test dep banned
+uncomment junit
